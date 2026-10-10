@@ -1,0 +1,1603 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>项目查重测试</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f3f6fb;
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 24px 18px 38px;
+    }
+
+    .header {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #dbe3ef;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      color: #111827;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .panel {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: #111827;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .full-row {
+      grid-column: 1 / -1;
+    }
+
+    .run-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      height: 40px;
+      padding: 8px 11px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #111827;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    input[type="file"] {
+      display: block;
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 10px;
+      border: 1px dashed #94a3b8;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      height: 36px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    button.primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: #1d4ed8;
+    }
+
+    button.secondary {
+      border-color: #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .time-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid #dbe3ef;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      overflow: auto;
+      max-height: 230px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .steps-empty {
+      padding: 10px 12px;
+      color: #64748b;
+      background: #f8fafc;
+      font-size: 13px;
+    }
+
+    .step-item {
+      position: relative;
+      padding: 10px 12px 10px 40px;
+      border-bottom: 1px solid #eef2f7;
+      background: #ffffff;
+    }
+
+    .step-item:last-child {
+      border-bottom: 0;
+    }
+
+    .step-item::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 9px;
+      height: 9px;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .step-item::after {
+      content: "";
+      position: absolute;
+      top: 30px;
+      bottom: -1px;
+      left: 21px;
+      width: 1px;
+      background: #e2e8f0;
+    }
+
+    .step-item:last-child::after {
+      display: none;
+    }
+
+    .step-item.running::before {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .step-item.succeeded::before {
+      border-color: #059669;
+      background: #059669;
+    }
+
+    .step-item.failed::before {
+      border-color: #dc2626;
+      background: #dc2626;
+    }
+
+    .step-item.stopped::before {
+      border-color: #d97706;
+      background: #d97706;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .step-title {
+      color: #111827;
+      font-size: 14px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .step-badge {
+      flex: 0 0 auto;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .step-item.running .step-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .step-item.succeeded .step-badge {
+      background: #dcfce7;
+      color: #047857;
+    }
+
+    .step-item.failed .step-badge {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .step-item.stopped .step-badge {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .step-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+      color: #64748b;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .step-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .step-detail {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 12px;
+    }
+
+    .step-detail summary {
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .step-detail pre {
+      max-height: 160px;
+      overflow: auto;
+      margin: 8px 0 0;
+      padding: 9px 10px;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.92);
+      color: #e5e7eb;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .log {
+      min-height: 40px;
+      margin-top: 12px;
+      padding: 9px 12px;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #2563eb;
+      border-radius: 6px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .log.error {
+      border-color: #fecaca;
+      border-left-color: #dc2626;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .log.success {
+      border-color: #bbf7d0;
+      border-left-color: #059669;
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .result {
+      min-height: 560px;
+      max-height: none;
+      overflow: auto;
+      margin: 0;
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1f2937;
+      font-size: 14px;
+      line-height: 1.7;
+      word-break: break-word;
+    }
+
+    .result h1,
+    .result h2,
+    .result h3 {
+      margin: 16px 0 8px;
+      color: #111827;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .result h1 {
+      font-size: 22px;
+    }
+
+    .result h2 {
+      font-size: 19px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .result h3 {
+      font-size: 16px;
+    }
+
+    .result p {
+      margin: 8px 0;
+    }
+
+    .result ul,
+    .result ol {
+      margin: 8px 0 8px 22px;
+      padding: 0;
+    }
+
+    .result li {
+      margin: 4px 0;
+    }
+
+    .result table {
+      width: 100%;
+      margin: 12px 0;
+      border-collapse: collapse;
+      table-layout: auto;
+      font-size: 13px;
+      min-width: 720px;
+    }
+
+    .result th,
+    .result td {
+      padding: 8px 10px;
+      border: 1px solid #dbe3ef;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .result th {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .result tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .result code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #eef2f7;
+      color: #0f172a;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 13px;
+    }
+
+    .result pre {
+      overflow: auto;
+      padding: 12px;
+      border-radius: 6px;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .small-button {
+      height: 30px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      .grid,
+      .run-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        padding: 20px 12px 28px;
+      }
+
+      .result {
+        min-height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>项目查重测试</h1>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <span>运行配置</span>
+        <span id="timeStatus" class="time-pill">耗时 -</span>
+      </div>
+      <div class="run-grid">
+        <div>
+          <label for="workflowUrl">运行地址</label>
+          <input id="workflowUrl" type="text" autocomplete="off">
+        </div>
+        <div>
+          <label for="docxFile">DOCX 文件</label>
+          <input id="docxFile" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="runButton" class="primary" type="button">开始查重</button>
+        <button id="stopButton" class="secondary" type="button" disabled>停止</button>
+        <button id="clearButton" class="secondary" type="button">清空结果</button>
+      </div>
+      <div id="message" class="log">等待选择 DOCX 文件。</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">执行过程</div>
+      <div id="steps" class="steps">
+        <div class="steps-empty">暂无步骤。</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <span>查重结果</span>
+        <span>
+          <button id="copyButton" class="secondary small-button" type="button">复制</button>
+          <button id="downloadButton" class="secondary small-button" type="button">下载 TXT</button>
+        </span>
+      </div>
+      <div id="result" class="result">暂无结果。</div>
+    </div>
+  </div>
+
+  <script>
+    var DEFAULT_CONFIG = {
+      workflowUrl: "http://10.122.66.165:10062/workflow/v8GEpCHlRS5o0QAs",
+      inputName: "input",
+      userId: "project-dedup-test"
+    };
+
+    var els = {
+      workflowUrl: document.getElementById("workflowUrl"),
+      docxFile: document.getElementById("docxFile"),
+      runButton: document.getElementById("runButton"),
+      stopButton: document.getElementById("stopButton"),
+      clearButton: document.getElementById("clearButton"),
+      copyButton: document.getElementById("copyButton"),
+      downloadButton: document.getElementById("downloadButton"),
+      message: document.getElementById("message"),
+      timeStatus: document.getElementById("timeStatus"),
+      steps: document.getElementById("steps"),
+      result: document.getElementById("result")
+    };
+
+    function loadConfig() {
+      var saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem("projectDedupConfig") || "{}");
+      } catch (e) {
+        saved = {};
+      }
+
+      els.workflowUrl.value = saved.workflowUrl || buildWorkflowUrl(saved) || DEFAULT_CONFIG.workflowUrl;
+    }
+
+    function saveConfig() {
+      try {
+        localStorage.setItem("projectDedupConfig", JSON.stringify(getConfig()));
+      } catch (e) {
+      }
+    }
+
+    function getConfig() {
+      var parsed = parseWorkflowUrl(els.workflowUrl.value);
+      return {
+        workflowUrl: trim(els.workflowUrl.value),
+        baseUrl: parsed.baseUrl,
+        appCode: parsed.appCode,
+        inputName: DEFAULT_CONFIG.inputName,
+        userId: DEFAULT_CONFIG.userId
+      };
+    }
+
+    function buildWorkflowUrl(config) {
+      if (!config || !config.baseUrl || !config.appCode)
+        return "";
+      return normalizeBaseUrl(config.baseUrl) + "/workflow/" + config.appCode;
+    }
+
+    function parseWorkflowUrl(value) {
+      var text = trim(value || DEFAULT_CONFIG.workflowUrl);
+      var match = text.match(/^(https?:\/\/[^/]+)\/workflow\/([^/?#\s]+)\/?(?:[?#].*)?$/i);
+      if (match) {
+        return {
+          baseUrl: normalizeBaseUrl(match[1]),
+          appCode: match[2]
+        };
+      }
+
+      return {
+        baseUrl: "",
+        appCode: ""
+      };
+    }
+
+    function normalizeBaseUrl(value) {
+      var base = trim(value);
+      base = base.replace(/\/+$/, "");
+      base = base.replace(/\/v1$/i, "");
+      base = base.replace(/\/api$/i, "");
+      base = base.replace(/\/workflow\/[^/?#\s]+$/i, "");
+      return base;
+    }
+
+    function trim(value) {
+      return String(value == null ? "" : value).replace(/^\s+|\s+$/g, "");
+    }
+
+    function setMessage(text, type) {
+      els.message.className = "log" + (type ? " " + type : "");
+      els.message.textContent = text;
+    }
+
+    function resetDebug() {
+    }
+
+    function addDebug(text) {
+    }
+
+    var runState = {
+      xhr: null,
+      config: null,
+      passport: "",
+      taskId: "",
+      stopped: false,
+      startedAt: 0,
+      timer: null,
+      resultText: "",
+      processedEventCount: 0,
+      steps: []
+    };
+
+    function setResultText(text) {
+      runState.resultText = String(text == null ? "" : text);
+      els.result.textContent = runState.resultText;
+    }
+
+    function setResultMarkdown(text) {
+      runState.resultText = String(text == null ? "" : text);
+      els.result.innerHTML = markdownToHtml(runState.resultText);
+    }
+
+    function escapeHtml(text) {
+      return String(text == null ? "" : text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderInlineMarkdown(text) {
+      var html = escapeHtml(text);
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+      return html;
+    }
+
+    function markdownToHtml(markdown) {
+      var lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+      var html = [];
+      var paragraph = [];
+      var inCode = false;
+      var codeLines = [];
+      var listType = "";
+
+      function flushParagraph() {
+        if (!paragraph.length)
+          return;
+        html.push("<p>" + renderInlineMarkdown(paragraph.join(" ")) + "</p>");
+        paragraph = [];
+      }
+
+      function closeList() {
+        if (!listType)
+          return;
+        html.push("</" + listType + ">");
+        listType = "";
+      }
+
+      function openList(type) {
+        if (listType === type)
+          return;
+        closeList();
+        flushParagraph();
+        html.push("<" + type + ">");
+        listType = type;
+      }
+
+      function isTableSeparator(line) {
+        return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
+      }
+
+      function isTableRow(line) {
+        return line.indexOf("|") > -1 && !isTableSeparator(line);
+      }
+
+      function splitTableRow(line) {
+        var row = trim(line);
+        if (row.charAt(0) === "|")
+          row = row.slice(1);
+        if (row.charAt(row.length - 1) === "|")
+          row = row.slice(0, -1);
+        return row.split("|");
+      }
+
+      function renderTable(startIndex) {
+        var header = splitTableRow(lines[startIndex]);
+        var index = startIndex + 2;
+        var body = [];
+
+        while (index < lines.length && isTableRow(lines[index])) {
+          body.push(splitTableRow(lines[index]));
+          index++;
+        }
+
+        html.push("<table><thead><tr>");
+        for (var h = 0; h < header.length; h++)
+          html.push("<th>" + renderInlineMarkdown(trim(header[h])) + "</th>");
+        html.push("</tr></thead><tbody>");
+
+        for (var r = 0; r < body.length; r++) {
+          html.push("<tr>");
+          for (var c = 0; c < header.length; c++)
+            html.push("<td>" + renderInlineMarkdown(trim(body[r][c] || "")) + "</td>");
+          html.push("</tr>");
+        }
+
+        html.push("</tbody></table>");
+        return index - 1;
+      }
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var trimmed = trim(line);
+
+        if (trimmed.indexOf("```") === 0) {
+          if (inCode) {
+            html.push("<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
+            codeLines = [];
+            inCode = false;
+          } else {
+            flushParagraph();
+            closeList();
+            inCode = true;
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeLines.push(line);
+          continue;
+        }
+
+        if (!trimmed) {
+          flushParagraph();
+          closeList();
+          continue;
+        }
+
+        if (i + 1 < lines.length && isTableRow(trimmed) && isTableSeparator(lines[i + 1])) {
+          flushParagraph();
+          closeList();
+          i = renderTable(i);
+          continue;
+        }
+
+        if (/^###\s+/.test(trimmed)) {
+          flushParagraph();
+          closeList();
+          html.push("<h3>" + renderInlineMarkdown(trimmed.replace(/^###\s+/, "")) + "</h3>");
+          continue;
+        }
+
+        if (/^##\s+/.test(trimmed)) {
+          flushParagraph();
+          closeList();
+          html.push("<h2>" + renderInlineMarkdown(trimmed.replace(/^##\s+/, "")) + "</h2>");
+          continue;
+        }
+
+        if (/^#\s+/.test(trimmed)) {
+          flushParagraph();
+          closeList();
+          html.push("<h1>" + renderInlineMarkdown(trimmed.replace(/^#\s+/, "")) + "</h1>");
+          continue;
+        }
+
+        if (/^\d+[\.\、]\s+/.test(trimmed)) {
+          openList("ol");
+          html.push("<li>" + renderInlineMarkdown(trimmed.replace(/^\d+[\.\、]\s+/, "")) + "</li>");
+          continue;
+        }
+
+        if (/^[-*]\s+/.test(trimmed)) {
+          openList("ul");
+          html.push("<li>" + renderInlineMarkdown(trimmed.replace(/^[-*]\s+/, "")) + "</li>");
+          continue;
+        }
+
+        paragraph.push(trimmed);
+      }
+
+      if (inCode)
+        html.push("<pre><code>" + escapeHtml(codeLines.join("\n")) + "</code></pre>");
+      flushParagraph();
+      closeList();
+
+      return html.join("");
+    }
+
+    function setBusy(isBusy) {
+      els.runButton.disabled = isBusy;
+      els.stopButton.disabled = !isBusy;
+      els.runButton.textContent = isBusy ? "查重中..." : "开始查重";
+    }
+
+    function startElapsedTimer() {
+      stopElapsedTimer();
+      runState.startedAt = new Date().getTime();
+      runState.timer = setInterval(function() {
+        var seconds = Math.floor((new Date().getTime() - runState.startedAt) / 1000);
+        els.timeStatus.textContent = "耗时 " + seconds + " 秒";
+      }, 1000);
+    }
+
+    function stopElapsedTimer() {
+      if (runState.timer) {
+        clearInterval(runState.timer);
+        runState.timer = null;
+      }
+    }
+
+    function resetSteps() {
+      runState.steps = [];
+      runState.processedEventCount = 0;
+      renderSteps();
+    }
+
+    function findStepIndex(key) {
+      for (var i = 0; i < runState.steps.length; i++) {
+        if (runState.steps[i].key === key)
+          return i;
+      }
+      return -1;
+    }
+
+    function upsertStep(step) {
+      var index = findStepIndex(step.key);
+      if (index === -1) {
+        if (step.incrementRunCount)
+          step.runCount = 1;
+        if (step.addElapsed)
+          step.elapsedSeconds = step.addElapsed;
+        runState.steps.push(step);
+      } else {
+        var current = runState.steps[index];
+        if (step.incrementRunCount)
+          current.runCount = (current.runCount || 0) + 1;
+        if (step.addElapsed)
+          current.elapsedSeconds = (current.elapsedSeconds || 0) + step.addElapsed;
+        for (var name in step) {
+          if (name === "incrementRunCount" || name === "addElapsed")
+            continue;
+          if (name === "startedAt" && current.startedAt)
+            continue;
+          if (Object.prototype.hasOwnProperty.call(step, name) && step[name] !== undefined && step[name] !== "")
+            current[name] = step[name];
+        }
+      }
+      renderSteps();
+    }
+
+    function getNodeStepKey(event) {
+      var data = event && event.data ? event.data : {};
+      return "node:" + (data.node_id || data.title || data.id || data.node_execution_id || getNodeTitle(event));
+    }
+
+    function normalizeStepStatus(status) {
+      if (status === "succeeded" || status === "success")
+        return "succeeded";
+      if (status === "failed" || status === "error")
+        return "failed";
+      if (status === "stopped")
+        return "stopped";
+      if (status === "running")
+        return "running";
+      return "waiting";
+    }
+
+    function stepStatusText(status) {
+      var normalized = normalizeStepStatus(status);
+      if (normalized === "running")
+        return "运行中";
+      if (normalized === "succeeded")
+        return "完成";
+      if (normalized === "failed")
+        return "失败";
+      if (normalized === "stopped")
+        return "已停止";
+      return "等待";
+    }
+
+    function formatElapsed(value) {
+      if (value === undefined || value === null || value === "")
+        return "";
+      var number = Number(value);
+      if (!isNaN(number)) {
+        if (number < 1)
+          return number.toFixed(2) + " 秒";
+        return number.toFixed(1) + " 秒";
+      }
+      return String(value);
+    }
+
+    function toNumber(value) {
+      var number = Number(value);
+      return isNaN(number) ? 0 : number;
+    }
+
+    function formatEventTime(value) {
+      if (!value)
+        return "";
+      var timestamp = Number(value);
+      if (!timestamp)
+        return "";
+      if (timestamp < 100000000000)
+        timestamp = timestamp * 1000;
+      var date = new Date(timestamp);
+      if (isNaN(date.getTime()))
+        return "";
+      return date.toLocaleTimeString();
+    }
+
+    function buildStepMetaParts(step) {
+      var meta = [];
+      if (step.type)
+        meta.push(step.type);
+      if (step.startedAt)
+        meta.push("开始 " + step.startedAt);
+      if (step.elapsedSeconds)
+        meta.push("耗时 " + formatElapsed(step.elapsedSeconds));
+      else if (step.elapsed)
+        meta.push("耗时 " + step.elapsed);
+      if (step.runCount && step.runCount > 1)
+        meta.push("执行 " + step.runCount + " 次");
+      if (step.totalSteps)
+        meta.push("节点 " + step.totalSteps);
+      if (step.tokens)
+        meta.push("Tokens " + step.tokens);
+      return meta;
+    }
+
+    function buildEventDetail(data) {
+      if (!data || !data.error)
+        return "";
+      return stringifyValue(data.error);
+    }
+
+    function renderSteps() {
+      if (!runState.steps.length) {
+        els.steps.innerHTML = '<div class="steps-empty">暂无步骤。</div>';
+        return;
+      }
+
+      var html = [];
+      for (var i = 0; i < runState.steps.length; i++) {
+        var step = runState.steps[i];
+        var status = normalizeStepStatus(step.status);
+        var meta = buildStepMetaParts(step);
+        html.push('<div class="step-item ' + status + '">');
+        html.push('<div class="step-header">');
+        html.push('<div class="step-title">' + escapeHtml(step.title || "节点") + '</div>');
+        html.push('<span class="step-badge">' + stepStatusText(status) + '</span>');
+        html.push('</div>');
+        if (meta.length) {
+          html.push('<div class="step-meta">');
+          for (var j = 0; j < meta.length; j++)
+            html.push('<span class="step-chip">' + escapeHtml(meta[j]) + '</span>');
+          html.push('</div>');
+        }
+        if (step.detail)
+          html.push('<details class="step-detail"><summary>错误详情</summary><pre>' + escapeHtml(step.detail) + '</pre></details>');
+        html.push('</div>');
+      }
+
+      els.steps.innerHTML = html.join("");
+    }
+
+    function processWorkflowEvent(event) {
+      var data = event && event.data ? event.data : {};
+
+      if (event.task_id)
+        runState.taskId = event.task_id;
+
+      if (event.event === "workflow_started") {
+        upsertStep({
+          key: "workflow-started",
+          title: "工作流开始",
+          type: "workflow",
+          status: "running",
+          startedAt: formatEventTime(data.created_at)
+        });
+        setMessage("工作流已开始。", "");
+        return;
+      }
+
+      if (event.event === "node_started") {
+        upsertStep({
+          key: getNodeStepKey(event),
+          title: getNodeTitle(event),
+          type: data.node_type || "",
+          status: "running",
+          startedAt: formatEventTime(data.created_at),
+          incrementRunCount: true
+        });
+        setMessage("正在处理：" + getNodeTitle(event), "");
+        return;
+      }
+
+      if (event.event === "node_finished") {
+        upsertStep({
+          key: getNodeStepKey(event),
+          title: getNodeTitle(event),
+          type: data.node_type || "",
+          status: normalizeStepStatus(data.status || "succeeded"),
+          addElapsed: toNumber(data.elapsed_time),
+          detail: buildEventDetail(data)
+        });
+        setMessage("已完成：" + getNodeTitle(event), "");
+        return;
+      }
+
+      if (event.event === "workflow_finished") {
+        var status = normalizeStepStatus(data.status || "succeeded");
+        upsertStep({
+          key: "workflow-started",
+          title: "工作流开始",
+          type: "workflow",
+          status: status
+        });
+        upsertStep({
+          key: "workflow-finished",
+          title: "工作流完成",
+          type: "workflow",
+          status: status,
+          elapsed: formatElapsed(data.elapsed_time),
+          totalSteps: data.total_steps,
+          tokens: data.total_tokens,
+          detail: data.error ? buildEventDetail(data) : ""
+        });
+        setMessage("工作流已返回结果。", status === "failed" ? "error" : "success");
+      }
+    }
+
+    function processParsedWorkflowEvents(parsed) {
+      var events = parsed && parsed.events ? parsed.events : [];
+      var start = runState.processedEventCount || 0;
+      if (start > events.length)
+        start = 0;
+
+      for (var i = start; i < events.length; i++)
+        processWorkflowEvent(events[i]);
+
+      runState.processedEventCount = events.length;
+    }
+
+    function markRunningStepsStopped() {
+      for (var i = 0; i < runState.steps.length; i++) {
+        if (normalizeStepStatus(runState.steps[i].status) === "running")
+          runState.steps[i].status = "stopped";
+      }
+      renderSteps();
+    }
+
+    function formatSize(size) {
+      if (!size && size !== 0) return "-";
+      if (size < 1024) return size + " B";
+      if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
+      return (size / 1024 / 1024).toFixed(1) + " MB";
+    }
+
+    function request(options) {
+      return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(options.method || "GET", options.url, true);
+        xhr.timeout = options.timeout || 0;
+        addDebug((options.method || "GET") + " " + options.url);
+
+        if (options.onXhr)
+          options.onXhr(xhr);
+
+        var headers = options.headers || {};
+        for (var name in headers) {
+          if (Object.prototype.hasOwnProperty.call(headers, name))
+            xhr.setRequestHeader(name, headers[name]);
+        }
+
+        xhr.onprogress = function() {
+          if (options.onProgress)
+            options.onProgress(xhr.responseText || "", xhr);
+        };
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState !== 4)
+            return;
+
+          var text = xhr.responseText || "";
+          var data = null;
+          try {
+            data = text ? JSON.parse(text) : null;
+          } catch (e) {
+            data = text;
+          }
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            addDebug("HTTP " + xhr.status + " " + options.url);
+            resolve({ status: xhr.status, data: data, text: text });
+          } else {
+            addDebug("HTTP " + xhr.status + " " + options.url + " " + text.slice(0, 200));
+            reject(buildError(xhr.status, data, text));
+          }
+        };
+
+        xhr.onerror = function() {
+          addDebug("NETWORK ERROR " + options.url);
+          reject(new Error("网络请求失败。请检查服务地址、防火墙、CORS 或 Dify 是否启动。"));
+        };
+
+        xhr.onabort = function() {
+          addDebug("ABORT " + options.url);
+          reject(new Error("已停止。"));
+        };
+
+        xhr.ontimeout = function() {
+          addDebug("TIMEOUT " + options.url);
+          reject(new Error("请求超时。工作流可能还在执行，或服务地址无法访问。"));
+        };
+
+        xhr.send(options.body || null);
+      });
+    }
+
+    function buildError(status, data, text) {
+      var message = "";
+      if (data && typeof data === "object") {
+        message = data.message || data.error || data.code || "";
+      }
+      if (!message)
+        message = text || "请求失败";
+      return new Error("HTTP " + status + "：" + message);
+    }
+
+    function getPassport(config) {
+      return request({
+        method: "GET",
+        url: config.baseUrl + "/api/passport?user_id=" + encodeURIComponent(config.userId),
+        headers: {
+          "X-App-Code": config.appCode
+        },
+        timeout: 60 * 1000,
+        onXhr: function(xhr) {
+          runState.xhr = xhr;
+        }
+      });
+    }
+
+    function uploadFile(config, passport, file) {
+      var form = new FormData();
+      form.append("file", file, file.name);
+
+      return request({
+        method: "POST",
+        url: config.baseUrl + "/api/files/upload",
+        headers: {
+          "X-App-Code": config.appCode,
+          "X-App-Passport": passport
+        },
+        body: form,
+        timeout: 10 * 60 * 1000,
+        onXhr: function(xhr) {
+          runState.xhr = xhr;
+        }
+      });
+    }
+
+    function getParameters(config, passport) {
+      return request({
+        method: "GET",
+        url: config.baseUrl + "/api/parameters",
+        headers: {
+          "X-App-Code": config.appCode,
+          "X-App-Passport": passport
+        },
+        timeout: 60 * 1000,
+        onXhr: function(xhr) {
+          runState.xhr = xhr;
+        }
+      });
+    }
+
+    function findFileInputName(parameters) {
+      var form = parameters && parameters.user_input_form;
+      if (!form || !form.length)
+        return "";
+
+      for (var i = 0; i < form.length; i++) {
+        var item = form[i];
+        for (var key in item) {
+          if (!Object.prototype.hasOwnProperty.call(item, key))
+            continue;
+
+          var field = item[key];
+          if (field && (field.type === "file" || key === "file") && field.variable)
+            return field.variable;
+        }
+      }
+
+      return "";
+    }
+
+    function runWorkflow(config, passport, uploadFileId, onProgress) {
+      var inputs = {};
+      inputs[config.inputName] = {
+        transfer_method: "local_file",
+        upload_file_id: uploadFileId,
+        type: "document"
+      };
+
+      return request({
+        method: "POST",
+        url: config.baseUrl + "/api/workflows/run",
+        headers: {
+          "X-App-Code": config.appCode,
+          "X-App-Passport": passport,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          inputs: inputs
+        }),
+        timeout: 60 * 60 * 1000,
+        onXhr: function(xhr) {
+          runState.xhr = xhr;
+        },
+        onProgress: onProgress
+      });
+    }
+
+    function normalizeWorkflowResponse(responseData) {
+      if (typeof responseData === "string")
+        return parseSseResponse(responseData);
+      return responseData || {};
+    }
+
+    function parseSseResponse(text) {
+      var blocks = String(text || "").split(/\r?\n\r?\n/);
+      var events = [];
+      var resultText = "";
+      var finished = null;
+      var hasPing = false;
+
+      for (var i = 0; i < blocks.length; i++) {
+        var block = trim(blocks[i]);
+        if (!block)
+          continue;
+
+        if (block === "event: ping") {
+          hasPing = true;
+          continue;
+        }
+
+        var lines = block.split(/\r?\n/);
+        var eventName = "";
+        var dataLines = [];
+
+        for (var j = 0; j < lines.length; j++) {
+          var line = lines[j];
+          if (line.indexOf("event:") === 0)
+            eventName = trim(line.slice(6));
+          else if (line.indexOf("data:") === 0)
+            dataLines.push(trim(line.slice(5)));
+        }
+
+        if (!dataLines.length)
+          continue;
+
+        var payload = dataLines.join("\n");
+        if (!payload || payload === "[DONE]")
+          continue;
+
+        try {
+          var item = JSON.parse(payload);
+          if (!item.event && eventName)
+            item.event = eventName;
+          events.push(item);
+
+          if (item.event === "text_chunk" && item.data && item.data.text)
+            resultText += item.data.text;
+          if (item.event === "text_replace" && item.data && item.data.text)
+            resultText = item.data.text;
+          if (item.event === "workflow_finished")
+            finished = item;
+        } catch (e) {
+        }
+      }
+
+      if (finished) {
+        var finishedData = finished.data || {};
+        return {
+          workflow_run_id: finished.workflow_run_id || finishedData.workflow_run_id,
+          data: finishedData,
+          outputs: finishedData.outputs,
+          events: events
+        };
+      }
+
+      if (resultText)
+        return { outputs: { result: resultText }, events: events };
+
+      return { raw: text, events: events, hasPing: hasPing };
+    }
+
+    function handleWorkflowProgress(text) {
+      var parsed = parseSseResponse(text);
+      if (!parsed.events || !parsed.events.length)
+        return;
+
+      processParsedWorkflowEvents(parsed);
+
+      if (parsed.outputs)
+        setResultMarkdown(getOutputText(parsed));
+    }
+
+    function getNodeTitle(event) {
+      var data = event && event.data ? event.data : {};
+      return data.title || data.node_title || data.node_type || data.node_id || "节点";
+    }
+
+    function stopCurrentRun() {
+      runState.stopped = true;
+      markRunningStepsStopped();
+      setMessage("正在停止...", "");
+
+      if (runState.taskId && runState.config && runState.passport) {
+        request({
+          method: "POST",
+          url: runState.config.baseUrl + "/api/workflows/tasks/" + encodeURIComponent(runState.taskId) + "/stop",
+          headers: {
+            "X-App-Code": runState.config.appCode,
+            "X-App-Passport": runState.passport
+          },
+          timeout: 30 * 1000
+        }).then(function() {
+          setMessage("已发送停止请求。", "success");
+        }).catch(function(err) {
+          setMessage("停止请求失败：" + (err && err.message ? err.message : String(err)), "error");
+        });
+      }
+
+      if (runState.xhr)
+        runState.xhr.abort();
+    }
+
+    function getOutputText(responseData) {
+      var data = normalizeWorkflowResponse(responseData);
+      var payload = data.data || data;
+      var outputs = payload.outputs || data.outputs || null;
+
+      if (!outputs)
+        return prettyJson(data);
+
+      var preferredKeys = ["result", "answer", "output", "text", "report", "markdown"];
+      for (var i = 0; i < preferredKeys.length; i++) {
+        var key = preferredKeys[i];
+        if (outputs[key] !== undefined && outputs[key] !== null && outputs[key] !== "")
+          return stringifyValue(outputs[key]);
+      }
+
+      var keys = [];
+      for (var outputKey in outputs) {
+        if (Object.prototype.hasOwnProperty.call(outputs, outputKey))
+          keys.push(outputKey);
+      }
+
+      if (keys.length === 1)
+        return stringifyValue(outputs[keys[0]]);
+
+      return prettyJson(outputs);
+    }
+
+    function stringifyValue(value) {
+      if (typeof value === "string")
+        return value;
+      return prettyJson(value);
+    }
+
+    function prettyJson(value) {
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch (e) {
+        return String(value);
+      }
+    }
+
+    function getWorkflowMeta(responseData) {
+      var data = normalizeWorkflowResponse(responseData);
+      var payload = data.data || data;
+      return {
+        status: payload.status || data.status || "-",
+        elapsed: payload.elapsed_time || data.elapsed_time || "-",
+        runId: data.workflow_run_id || payload.id || "-"
+      };
+    }
+
+    function validateBeforeRun(config, file) {
+      if (!config.baseUrl)
+        return "请填写完整运行地址。";
+      if (!config.appCode)
+        return "请填写完整运行地址。";
+      if (!file)
+        return "请选择一个 DOCX 文件。";
+      if (!/\.docx$/i.test(file.name))
+        return "只能上传 .docx 文件。";
+      return "";
+    }
+
+    function run() {
+      var config = getConfig();
+      var file = els.docxFile.files && els.docxFile.files[0];
+      var error = validateBeforeRun(config, file);
+      if (error) {
+        setMessage(error, "error");
+        return;
+      }
+
+      saveConfig();
+      resetDebug();
+      addDebug("运行地址：" + config.workflowUrl);
+      addDebug("解析地址：" + config.baseUrl);
+      addDebug("运行码：" + config.appCode);
+      runState.config = config;
+      runState.passport = "";
+      runState.taskId = "";
+      runState.xhr = null;
+      runState.stopped = false;
+      resetSteps();
+      setBusy(true);
+      startElapsedTimer();
+      els.timeStatus.textContent = "耗时 -";
+      setResultText("正在连接工作流...");
+      setMessage("1/3 正在连接工作流：" + config.baseUrl + "/api/passport", "");
+
+      getPassport(config)
+        .then(function(passportResponse) {
+          var passport = passportResponse.data && passportResponse.data.access_token;
+          if (!passport)
+            throw new Error("连接工作流失败：" + prettyJson(passportResponse.data));
+
+          runState.passport = passport;
+          setMessage("2/4 正在读取工作流参数...", "");
+          setResultText("正在读取工作流参数...");
+          return getParameters(config, passport).then(function(parametersResponse) {
+            var detectedInputName = findFileInputName(parametersResponse.data);
+            if (detectedInputName)
+              config.inputName = detectedInputName;
+            addDebug("文件变量：" + config.inputName);
+            return {
+              passport: passport
+            };
+          });
+        })
+        .then(function(result) {
+          setMessage("3/4 正在上传文件...", "");
+          setResultText("正在上传文件...");
+          return uploadFile(config, result.passport, file).then(function(uploadResponse) {
+            return {
+              passport: result.passport,
+              uploadResponse: uploadResponse
+            };
+          });
+        })
+        .then(function(result) {
+          var uploadResponse = result.uploadResponse;
+          var uploadId = uploadResponse.data && uploadResponse.data.id;
+          if (!uploadId)
+            throw new Error("文件上传成功，但响应里没有 id：" + prettyJson(uploadResponse.data));
+
+          setResultText("文件上传成功，正在执行工作流...");
+          setMessage("4/4 正在执行项目查重工作流，文件大时会等一会儿。", "");
+          return runWorkflow(config, result.passport, uploadId, handleWorkflowProgress);
+        })
+        .then(function(workflowResponse) {
+          var parsed = normalizeWorkflowResponse(workflowResponse.data);
+          processParsedWorkflowEvents(parsed);
+          if (!hasWorkflowFinished(parsed)) {
+            setResultText("工作流连接已结束，但没有收到 workflow_finished 结果。\n\n原始返回：\n" + stringifyValue(parsed.raw || workflowResponse.data));
+            setMessage("没有收到工作流完成事件，可能是连接被浏览器/服务中断了。", "error");
+            return;
+          }
+
+          var meta = getWorkflowMeta(parsed);
+          els.timeStatus.textContent = meta.elapsed === "-" ? "耗时 -" : "耗时 " + meta.elapsed + " 秒";
+          setResultMarkdown(getOutputText(parsed));
+          setMessage("查重完成。工作流运行 ID：" + meta.runId, "success");
+        })
+        .catch(function(err) {
+          if (runState.stopped) {
+            markRunningStepsStopped();
+            setResultText("已停止。");
+            setMessage("已停止。", "success");
+            return;
+          }
+          setResultText(err && err.message ? err.message : String(err));
+          setMessage(err && err.message ? err.message : String(err), "error");
+        })
+        .then(function() {
+          stopElapsedTimer();
+          runState.xhr = null;
+          setBusy(false);
+        });
+    }
+
+    function hasWorkflowFinished(parsed) {
+      var events = parsed && parsed.events ? parsed.events : [];
+      for (var i = 0; i < events.length; i++) {
+        if (events[i].event === "workflow_finished")
+          return true;
+      }
+      return false;
+    }
+
+    function clearResult() {
+      if (!els.stopButton.disabled)
+        stopCurrentRun();
+      els.docxFile.value = "";
+      els.timeStatus.textContent = "耗时 -";
+      resetSteps();
+      setResultText("暂无结果。");
+      setMessage("等待选择 DOCX 文件。", "");
+    }
+
+    function copyResult() {
+      var text = runState.resultText || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          setMessage("结果已复制。", "success");
+        });
+        return;
+      }
+
+      var textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setMessage("结果已复制。", "success");
+    }
+
+    function downloadResult() {
+      var text = runState.resultText || "";
+      var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "项目查重结果.txt";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    els.runButton.onclick = run;
+    els.stopButton.onclick = stopCurrentRun;
+    els.clearButton.onclick = clearResult;
+    els.copyButton.onclick = copyResult;
+    els.downloadButton.onclick = downloadResult;
+    els.docxFile.onchange = function() {
+      var file = els.docxFile.files && els.docxFile.files[0];
+      if (file)
+        setMessage("已选择：" + file.name + "（" + formatSize(file.size) + "）", "");
+    };
+
+    loadConfig();
+  </script>
+</body>
+</html>
