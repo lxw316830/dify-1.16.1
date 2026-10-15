@@ -1,0 +1,10 @@
+{
+  "backend": "dify",
+  "base_url": "http://host.docker.internal/v1",
+  "api_key": "dataset-ob-HtKeHJr4CxMed_m7FRa14",
+  "dataset_ids": [
+    "84bf96f3-1b10-4235-b82e-3511e838b207"
+  ],
+  "search_method": "full_text_search",
+  "score_threshold": null
+}
