@@ -1,0 +1,7 @@
+{
+  "api_base": "http://10.122.66.165:10062/v1",
+  "api_key_env": "app-2ILiIoEY1sdrghuSomVSZJh0",
+  "input_name": "",
+  "user": "project-dedup-skill",
+  "timeout": 360000000
+}
