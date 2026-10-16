@@ -265,3 +265,6 @@ web/.vitest-reports/
 # dify-agent-runtime
 dify-agent-runtime/bin/
 dify-agent-runtime/.integration-state
+
+# project-dedup skill: service config holds the API key
+skills/project-dedup/config/service.json
