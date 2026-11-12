@@ -124,7 +124,11 @@ class DocxNumbering:
 
 
 def build_chunks_for_source(path: Path, max_chars: int = DEFAULT_MAX_CHARS) -> list[Chunk]:
-    text = read_source_text(path)
+    return build_chunks_from_text(read_source_text(path), path, max_chars)
+
+
+def build_chunks_from_text(text: str, path: Path, max_chars: int = DEFAULT_MAX_CHARS) -> list[Chunk]:
+    """按章节规则把全文切成入库块。docx/txt 和 PDF（pdf2md-service/build_kb_from_pdf.py）共用。"""
     project_name = extract_project_name(text) or infer_project_name(path)
     chunks: list[Chunk] = []
 
@@ -489,6 +493,10 @@ def classify_section(number: str, title: str, section_path: str) -> str:
     if any(marker in current_title for marker in ("项目目标", "预期成效", "预期成果")):
         return "requirement"
 
+    # 统建模板「2.x.1 业务需求描述」下的子节标题不一定带「业务需求」，但内容都是需求。
+    if any("业务需求描述" in item for item in titles):
+        return "requirement"
+
     if (
         any(marker in root_title for marker in ("项目需求分析", "需求分析"))
         or any(marker in current_title for marker in ("业务建设需求", "业务需求", "本期建设需求"))
@@ -501,7 +509,8 @@ def classify_section(number: str, title: str, section_path: str) -> str:
 
     if any(marker in root_title for marker in ("项目方案", "建设方案")):
         if any(marker in current_title for marker in ("工作内容", "建设任务")):
-            if len(number.split(".")) <= 8:
+            # 与查询端 pdf2md-service/chunk_node.py 保持一致。
+            if len(number.split(".")) <= 10:
                 return "project_content"
 
     return ""
@@ -756,7 +765,8 @@ def is_likely_heading(number: str, title: str) -> bool:
     title = clean_title(title)
     if not title or title.isdigit():
         return False
-    if title[0] in ".．、，,；;：:）)】]":
+    # 与查询端 pdf2md-service/chunk_node.py 保持一致。
+    if title[0] in ".．。 、,，;；:：)）（(、":
         return False
     if not re.search(r"[\u4e00-\u9fa5A-Za-z]", title):
         return False
